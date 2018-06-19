@@ -1,0 +1,43 @@
+@import 'src/stylesheets/partials/_mixins';
+@import 'src/stylesheets/partials/_colors';
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.row-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.tile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  height: 100px;
+  width: 100px;
+  background-color: $theme-secondary-color;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+.container {
+  display: grid;
+  grid: {
+    gap: 25px;
+    template-columns: 1fr;
+    auto-rows: auto;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  @include small-container;
+}
