@@ -59,7 +59,7 @@ const AllNumbers = {
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  multiTiles: Array<Array<Tile>>;
+  game: Array<Array<Tile>>;
   sampleSpace: Array<Position>;
   newTileSampleSpace: Array<Tile>;
   $tester;
@@ -72,7 +72,7 @@ export class HomeComponent implements OnInit {
       { label: 4, color: '#F06292' }
     ];
 
-    this.multiTiles = [
+    this.game = [
       [
         { label: 0, color: '' },
         { label: 0, color: '' },
@@ -135,7 +135,7 @@ export class HomeComponent implements OnInit {
     this.sampleSpace = [];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        if (this.multiTiles[i][j].label === 0) {
+        if (this.game[i][j].label === 0) {
           this.sampleSpace.push({ x: i, y: j });
         }
       }
@@ -147,75 +147,125 @@ export class HomeComponent implements OnInit {
       const tileIndex = Math.floor(
         Math.random() * this.newTileSampleSpace.length
       );
-      this.multiTiles[i][j] = this.newTileSampleSpace[tileIndex];
+      this.game[i][j] = this.newTileSampleSpace[tileIndex];
       console.log(this.newTileSampleSpace[tileIndex]);
     } else {
       console.log('game over');
     }
   }
 
+  normalizer(array?: Array<Tile>) {
+    return new Promise(resolve => {
+      if (array) {
+        const tempArray: Array<Tile> = array;
+        for (let i = array.length; i < 4; i++) {
+          tempArray.push({ label: 0, color: '' });
+        }
+        resolve(tempArray);
+      }
+    });
+  }
+
+  singleReducer(array: Array<Tile>) {
+    return new Promise(resolve => {
+      const tempArray = array.filter(tile => tile.label !== 0);
+      if (tempArray.length <= 1) {
+        const finalArray = this.normalizer(tempArray);
+        resolve(finalArray);
+      }
+    });
+  }
+
   resolveUp() {
-    console.log('resolve up');
+    console.log('resolve up: ');
+    const arrowUpArray: Array<Array<Tile>> = [[], [], [], []];
     for (let i = 0; i < 4; i++) {
-      let first = null;
       for (let j = 0; j < 4; j++) {
-        if (this.multiTiles[j][i].label === 0) {
-          if (first === null) {
-            first = j;
-          }
-        }
-        if (this.multiTiles[j][i].label > 0) {
-          if (first !== null) {
-            this.multiTiles[first][i] = this.multiTiles[j][i];
-            this.multiTiles[j][i] = { label: 0, color: '' };
-          }
-          for (let k = j + 1; k < 4; k++) {
-            if (this.multiTiles[k][i].label === this.multiTiles[j][i].label) {
-              this.multiTiles[j][i] =
-                AllNumbers[this.multiTiles[j][i].label * 2];
-              this.multiTiles[k][i] = AllNumbers[0];
-            }
-          }
-        }
+        arrowUpArray[i].push(this.game[j][i]);
       }
     }
-    this.generator();
+    const promiseArray = arrowUpArray.map(array => this.singleReducer(array));
+    const final = Promise.all(promiseArray);
+    final.then(array => {
+      const reconstructGame = [[], [], [], []];
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          reconstructGame[i].push(array[j][i]);
+        }
+      }
+      this.game = reconstructGame;
+      this.generator();
+      // console.log('reconstruct game: ', reconstructGame);
+    });
   }
 
   resolveDown() {
-    console.log('resolve down');
+    console.log('resolve down: ');
+    const arrowUpArray: Array<Array<Tile>> = [[], [], [], []];
+    for (let i = 0; i < 4; i++) {
+      for (let j = 3; j >= 0; j--) {
+        arrowUpArray[i].push(this.game[j][i]);
+      }
+    }
+    const promiseArray = arrowUpArray.map(array => this.singleReducer(array));
+    const final = Promise.all(promiseArray);
+    final.then((array: Array<Array<Tile>>) => {
+      const reconstructGame = [[], [], [], []];
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          reconstructGame[i].push(array[j].pop());
+        }
+      }
+      this.game = reconstructGame;
+      this.generator();
+      // console.log('reconstruct game: ', reconstructGame);
+    });
   }
 
   resolveLeft() {
     console.log('resolve left');
-    for (let i = 0; i < 4; i++) {
-      let first = null;
-      for (let j = 0; j < 4; j++) {
-        if (this.multiTiles[i][j].label === 0) {
-          if (first === null) {
-            first = j;
-          }
-        }
-        if (this.multiTiles[i][j].label > 0) {
-          if (first !== null) {
-            this.multiTiles[i][first] = this.multiTiles[i][j];
-            this.multiTiles[i][j] = { label: 0, color: '' };
-          }
-          for (let k = j + 1; k < 4; k++) {
-            if (this.multiTiles[i][k].label === this.multiTiles[i][j].label) {
-              this.multiTiles[i][j] =
-                AllNumbers[this.multiTiles[i][j].label * 2];
-              this.multiTiles[i][k] = AllNumbers[0];
-            }
-          }
-        }
-      }
-    }
-    this.generator();
+    const arrowUpArray: Array<Array<Tile>> = [];
+    this.game.forEach(array => {
+      arrowUpArray.push(array);
+    });
+    const promiseArray = arrowUpArray.map(array => this.singleReducer(array));
+    const final = Promise.all(promiseArray);
+    final.then(array => {
+      const reconstructGame = [];
+      array.forEach(internalArray => {
+        reconstructGame.push(internalArray);
+      });
+      this.game = reconstructGame;
+      this.generator();
+      // console.log('reconstruct game: ', reconstructGame);
+    });
   }
 
   resolveRight() {
     console.log('resolve right');
+    const arrowUpArray: Array<Array<Tile>> = [];
+    this.game.forEach(array => {
+      const tempArray = [];
+      for (let i = 3; i >= 0; i--) {
+        tempArray.push(array[i]);
+      }
+      arrowUpArray.push(tempArray);
+    });
+    const promiseArray = arrowUpArray.map(array => this.singleReducer(array));
+    const final = Promise.all(promiseArray);
+    final.then(array => {
+      const reconstructGame = [];
+      array.forEach((internalArray: Array<Tile>) => {
+        const tempArray = [];
+        for (let i = 0; i < 4; i++) {
+          tempArray.push(internalArray.pop());
+        }
+        reconstructGame.push(tempArray);
+      });
+      this.game = reconstructGame;
+      this.generator();
+      // console.log('reconstruct game: ', reconstructGame);
+    });
   }
 }
 

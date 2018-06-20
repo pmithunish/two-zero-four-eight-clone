@@ -3,7 +3,7 @@
     <mat-card>
       <div class="game-container">
         <div class="row-container">
-          <div class="column-container" *ngFor="let tiles of multiTiles">
+          <div class="column-container" *ngFor="let tiles of game">
             <div class="tile" *ngFor="let tile of tiles" [style.backgroundColor]="tile.color">
               <div *ngIf="tile.label > 0" class="label">{{ tile.label }}</div>
             </div>
