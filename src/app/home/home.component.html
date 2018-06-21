@@ -1,15 +1,71 @@
 <div class="main-container">
   <div class="container">
     <mat-card>
-      <div class="game-container">
-        <div class="row-container">
-          <div class="column-container" *ngFor="let tiles of game">
-            <div class="tile" *ngFor="let tile of tiles" [style.backgroundColor]="tile.color">
-              <div *ngIf="tile.label > 0" class="label">{{ tile.label }}</div>
+      <mat-card-header>
+        <div>
+          <span class="mat-display-3">2048</span>
+          <br>
+          <span class="mat-subheader">Join the numbers and get to the 2048 tile!</span>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="main-card">
+        <div class="game-background">
+          <div class="game-container">
+            <div class="row-container">
+              <div class="column-container" *ngFor="let tiles of game">
+                <div class="tile" *ngFor="let tile of tiles" [style.backgroundColor]="tile.color">
+                  <div *ngIf="tile.label > 0" class="label">{{ tile.label }}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </mat-card-content>
+      <mat-card-actions>
+      </mat-card-actions>
+    </mat-card>
+    <mat-card>
+      <mat-card-header>
+        <div class="mat-headline">How to play</div>
+      </mat-card-header>
+      <mat-card-content>
+        <div>
+          Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <div class="mat-headline">Note</div>
+      </mat-card-header>
+      <mat-card-content>
+        <div>
+          Made by
+          <a id="links" href="https://pmithunish.com" target="_blank" rel="noopener">Mithunish Prabhakarn</a> from India. The game on this site is not the original version of 2048. This is just a
+          clone of the game
+          <a id="links" href="https://gabrielecirulli.github.io/2048/" target="_blank" rel="noopener">2048</a> made by
+          <a id="links" href="https://github.com/gabrielecirulli" target="_blank" rel="noopener">Gabriele Cirulli</a>. This game is based on
+          <a id="links" href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank" rel="noopener">1024 by Veewo Studio</a> and conceptually similar to
+          <a id="links" href="http://asherv.com/threes/" target="_blank" rel="noopener">Threes by Asher Vollmer</a>. This version is made using
+          <a id="links" href="https://github.com/angular/angular" target="_blank" rel="noopener">Angular 6 Framework</a>,
+          <a id="links" href="https://github.com/angular/material2" target="_blank" rel="noopener">Angular Material 2</a> and
+          <a id="links" href="https://github.com/ngrx/store" target="_blank" rel="noopener">NGRX library</a> to show my competence to potential employers.
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <a href="https://gabrielecirulli.github.io/2048/" target="_blank" rel="noopener" mat-button color="accent">Original 2048!</a>
+        <a href="https://pmithunish.com" target="_blank" rel="noopener" mat-button color="primary">Check My Website!</a>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <div class="mat-headline">You love coffee☕? I like coffee☕ too! Would you like to get me one?</div>
+      </mat-card-header>
+      <mat-card-actions>
+        <a href="https://paypal.me/Mithunish/0.99usd" target="_blank" rel="noopener" mat-button color="accent">Buy Mithunish a coffee!</a>
+      </mat-card-actions>
     </mat-card>
   </div>
 </div>

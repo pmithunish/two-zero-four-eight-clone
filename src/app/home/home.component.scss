@@ -1,6 +1,32 @@
 @import 'src/stylesheets/partials/_mixins';
 @import 'src/stylesheets/partials/_colors';
 
+#links {
+  color: $accent-color;
+  text-decoration: none;
+  font-weight: bolder;
+}
+
+#links:hover {
+  color: $primary-color;
+  text-decoration: none;
+  font-weight: bolder;
+}
+
+.main-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.game-background {
+  width: max-content;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: $theme-background-color;
+}
+
 .game-container {
   display: flex;
   justify-content: center;
@@ -24,9 +50,9 @@
   font-size: 25px;
   height: 100px;
   width: 100px;
-  background-color: $theme-secondary-color;
+  background-color: $theme-background-contrast-color;
   border-radius: 5px;
-  margin: 5px;
+  margin: 7px;
 }
 
 .container {
