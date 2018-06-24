@@ -1,6 +1,11 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import * as fromStore from './../store';
+import { Generator, MoveUp, MoveDown, MoveLeft, MoveRight } from './../store';
 
 const AllNumbers = {
   0: {
@@ -65,43 +70,21 @@ export class HomeComponent implements OnInit {
   changed: Boolean = null;
   $tester;
   $input;
-  constructor() {}
+  $game: Observable<Array<Array<Tile>>>;
+  constructor(private store: Store<fromStore.AppState>) {}
 
   ngOnInit() {
+    this.$game = this.store.pipe(
+      select('game'),
+      map(state => state.data)
+    );
+    this.$game.subscribe(data => (this.game = data));
     this.newTileSampleSpace = [
       { label: 2, color: '#E57373' },
       { label: 4, color: '#F06292' }
     ];
 
-    this.game = [
-      [
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' }
-      ],
-      [
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' }
-      ],
-      [
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' }
-      ],
-      [
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' },
-        { label: 0, color: '' }
-      ]
-    ];
-
     this.generator();
-
     this.$input = fromEvent(document, 'keyup')
       .pipe(
         filter(
@@ -130,22 +113,39 @@ export class HomeComponent implements OnInit {
   }
 
   generator() {
-    this.sampleSpace = [];
+    let outerIndex = null;
+    let innerIndex = null;
+    let tile = null;
+    let gameAfterGenerator = null;
+    const sampleSpace = [];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
         if (this.game[i][j].label === 0) {
-          this.sampleSpace.push({ x: i, y: j });
+          sampleSpace.push({ x: i, y: j });
         }
       }
     }
-    if (this.sampleSpace.length) {
-      const index = Math.floor(Math.random() * this.sampleSpace.length);
-      const i = this.sampleSpace[index].x;
-      const j = this.sampleSpace[index].y;
+    if (sampleSpace.length) {
+      const index = Math.floor(Math.random() * sampleSpace.length);
+      outerIndex = sampleSpace[index].x;
+      innerIndex = sampleSpace[index].y;
       const tileIndex = Math.floor(
         Math.random() * this.newTileSampleSpace.length
       );
-      this.game[i][j] = this.newTileSampleSpace[tileIndex];
+      const innerArray = this.game[outerIndex];
+      tile = this.newTileSampleSpace[tileIndex];
+      gameAfterGenerator = [
+        ...innerArray.slice(0, innerIndex),
+        tile,
+        ...innerArray.slice(innerIndex + 1)
+      ];
+      this.store.dispatch(
+        new Generator([
+          ...this.game.slice(0, outerIndex),
+          gameAfterGenerator,
+          ...this.game.slice(outerIndex + 1)
+        ])
+      );
     } else {
       console.log('game over');
     }
@@ -289,7 +289,7 @@ export class HomeComponent implements OnInit {
           reconstructGame[i].push(processed[j][i]);
         }
       }
-      this.game = reconstructGame;
+      this.store.dispatch(new MoveUp(reconstructGame));
       this.generateAfterResolve();
     });
   }
@@ -311,7 +311,7 @@ export class HomeComponent implements OnInit {
           reconstructGame[i].push(processed[j].pop());
         }
       }
-      this.game = reconstructGame;
+      this.store.dispatch(new MoveDown(reconstructGame));
       this.generateAfterResolve();
     });
   }
@@ -329,7 +329,7 @@ export class HomeComponent implements OnInit {
       processed.forEach(splitArray => {
         reconstructGame.push(splitArray);
       });
-      this.game = reconstructGame;
+      this.store.dispatch(new MoveLeft(reconstructGame));
       this.generateAfterResolve();
     });
   }
@@ -355,7 +355,7 @@ export class HomeComponent implements OnInit {
         }
         reconstructGame.push(temp);
       });
-      this.game = reconstructGame;
+      this.store.dispatch(new MoveRight(reconstructGame));
       this.generateAfterResolve();
     });
   }
@@ -366,7 +366,7 @@ interface Position {
   y: number;
 }
 
-interface Tile {
+export interface Tile {
   label: number;
   color: string;
 }

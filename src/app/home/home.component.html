@@ -12,7 +12,7 @@
         <div class="game-background">
           <div class="game-container">
             <div class="row-container">
-              <div class="column-container" *ngFor="let tiles of game">
+              <div class="column-container" *ngFor="let tiles of $game | async">
                 <div class="tile" *ngFor="let tile of tiles" [style.backgroundColor]="tile.color">
                   <div *ngIf="tile.label > 0" class="label">{{ tile.label }}</div>
                 </div>
@@ -61,7 +61,7 @@
 
     <mat-card>
       <mat-card-header>
-        <div class="mat-headline">You love coffee☕? I like coffee☕ too! Would you like to get me one?</div>
+        <div class="mat-headline">You love coffee☕? I like coffee☕ too!</div>
       </mat-card-header>
       <mat-card-actions>
         <a href="https://paypal.me/Mithunish/0.99usd" target="_blank" rel="noopener" mat-button color="accent">Buy Mithunish a coffee!</a>
